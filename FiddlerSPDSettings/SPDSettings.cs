@@ -31,16 +31,16 @@ namespace FiddlerSPDSettings
             this.mnuSPD.Text = "SharePoint Designer";
 
             this.miEnableSPD.Click += new System.EventHandler(this.miEnableSPD_Click);
-            this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.SPDEnabled), false);
+            this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", Constants.Prefix, Constants.SPDEnabled), false);
 
             this.miEnableRevertFromTemplate.Click += new System.EventHandler(this.miEnableRevertFromTemplate_Click);
-            this.miEnableRevertFromTemplate.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.RevertFromTemplateEnabled), false);
+            this.miEnableRevertFromTemplate.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", Constants.Prefix, Constants.RevertFromTemplateEnabled), false);
 
             this.miEnableMasterPageEditing.Click += new System.EventHandler(this.miEnableMasterPageEditing_Click);
-            this.miEnableMasterPageEditing.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.MasterPageEditingEnabled), false);
+            this.miEnableMasterPageEditing.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", Constants.Prefix, Constants.MasterPageEditingEnabled), false);
 
             this.miEnableUrlStructure.Click += new System.EventHandler(this.miEnableUrlStructure_Click);
-            this.miEnableUrlStructure.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.UrlStructureEnabled), false);
+            this.miEnableUrlStructure.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", Constants.Prefix, Constants.UrlStructureEnabled), false);
         }
 
         private static void invertCheckboxAndSave(MenuItem mi, string fiddlerSettingName)
@@ -56,22 +56,22 @@ namespace FiddlerSPDSettings
 
         public void miEnableUrlStructure_Click(object sender, EventArgs e)
         {
-            invertCheckboxAndSave(this.miEnableUrlStructure, string.Format("{0}.{1}",FiddlerSettings.Prefix,FiddlerSettings.UrlStructureEnabled));
+            invertCheckboxAndSave(this.miEnableUrlStructure, string.Format("{0}.{1}",Constants.Prefix,Constants.UrlStructureEnabled));
         }
 
         public void miEnableMasterPageEditing_Click(object sender, EventArgs e)
         {
-            invertCheckboxAndSave(this.miEnableMasterPageEditing, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.MasterPageEditingEnabled));
+            invertCheckboxAndSave(this.miEnableMasterPageEditing, string.Format("{0}.{1}", Constants.Prefix, Constants.MasterPageEditingEnabled));
         }
 
         public void miEnableRevertFromTemplate_Click(object sender, EventArgs e)
         {
-            invertCheckboxAndSave(this.miEnableRevertFromTemplate, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.RevertFromTemplateEnabled));
+            invertCheckboxAndSave(this.miEnableRevertFromTemplate, string.Format("{0}.{1}", Constants.Prefix, Constants.RevertFromTemplateEnabled));
         }
 
         public void miEnableSPD_Click(object sender, EventArgs e)
         {
-            invertCheckboxAndSave(this.miEnableSPD, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.SPDEnabled));
+            invertCheckboxAndSave(this.miEnableSPD, string.Format("{0}.{1}", Constants.Prefix, Constants.SPDEnabled));
         }
 
         public void OnPeekAtResponseHeaders(Session oSession) { }

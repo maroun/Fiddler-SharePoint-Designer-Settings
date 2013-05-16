@@ -5,7 +5,7 @@ using System.Text;
 
 namespace FiddlerSPDSettings
 {
-    private class FiddlerSettings
+    class Constants
     {
         public const string Prefix = "extensions.spdsettings";
 
