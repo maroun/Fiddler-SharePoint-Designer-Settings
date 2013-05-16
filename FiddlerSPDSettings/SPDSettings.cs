@@ -31,16 +31,22 @@ namespace FiddlerSPDSettings
             this.mnuSPD.Text = "SharePoint Designer";
 
             this.miEnableSPD.Click += new System.EventHandler(this.miEnableSPD_Click);
-            this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableSpd", false);
+            this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.SPDEnabled), false);
 
             this.miEnableRevertFromTemplate.Click += new System.EventHandler(this.miEnableRevertFromTemplate_Click);
-            this.miEnableRevertFromTemplate.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", false);
+            this.miEnableRevertFromTemplate.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.RevertFromTemplateEnabled), false);
 
             this.miEnableMasterPageEditing.Click += new System.EventHandler(this.miEnableMasterPageEditing_Click);
-            this.miEnableMasterPageEditing.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableMasterPageEditing", false);
+            this.miEnableMasterPageEditing.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.MasterPageEditingEnabled), false);
 
             this.miEnableUrlStructure.Click += new System.EventHandler(this.miEnableUrlStructure_Click);
-            this.miEnableUrlStructure.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableUrlStructure", false);
+            this.miEnableUrlStructure.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.UrlStructureEnabled), false);
+        }
+
+        private static void invertCheckboxAndSave(MenuItem mi, string fiddlerSettingName)
+        {
+            mi.Checked = !mi.Checked;
+            FiddlerApplication.Prefs.SetBoolPref(fiddlerSettingName, mi.Checked);
         }
 
         public SPDSettings()
@@ -50,26 +56,22 @@ namespace FiddlerSPDSettings
 
         public void miEnableUrlStructure_Click(object sender, EventArgs e)
         {
-            miEnableUrlStructure.Checked = !miEnableUrlStructure.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableFileListing", miEnableUrlStructure.Checked);
+            invertCheckboxAndSave(this.miEnableUrlStructure, string.Format("{0}.{1}",FiddlerSettings.Prefix,FiddlerSettings.UrlStructureEnabled));
         }
 
         public void miEnableMasterPageEditing_Click(object sender, EventArgs e)
         {
-            miEnableMasterPageEditing.Checked = !miEnableMasterPageEditing.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableMasterPageEditing", miEnableMasterPageEditing.Checked);
+            invertCheckboxAndSave(this.miEnableMasterPageEditing, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.MasterPageEditingEnabled));
         }
 
         public void miEnableRevertFromTemplate_Click(object sender, EventArgs e)
         {
-            miEnableRevertFromTemplate.Checked = !miEnableRevertFromTemplate.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", miEnableRevertFromTemplate.Checked);
+            invertCheckboxAndSave(this.miEnableRevertFromTemplate, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.RevertFromTemplateEnabled));
         }
 
         public void miEnableSPD_Click(object sender, EventArgs e)
         {
-            miEnableSPD.Checked = !miEnableSPD.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableSpd", miEnableSPD.Checked);
+            invertCheckboxAndSave(this.miEnableSPD, string.Format("{0}.{1}", FiddlerSettings.Prefix, FiddlerSettings.SPDEnabled));
         }
 
         public void OnPeekAtResponseHeaders(Session oSession) { }
@@ -82,13 +84,16 @@ namespace FiddlerSPDSettings
 
         public void AutoTamperResponseBefore(Session oSession)
         {
+            if (this.miEnableSPD.Checked || this.miEnableRevertFromTemplate.Checked || this.miEnableMasterPageEditing.Checked || this.miEnableUrlStructure.Checked)
+            {
+                oSession.utilDecodeResponse();
+            }
+
             if (this.miEnableSPD.Checked)
             {
                 if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
                 {
-                    oSession.utilDecodeResponse();
                     oSession.utilReplaceInResponse("\n<li>vti_disablewebdesignfeatures2\n<li>SX|wdfopensite", "");
-                    oSession.utilReplaceInResponse("\n<li>showurlstructure\n<li>SW|0", "\n<li>showurlstructure\n<li>SW|1");
                     oSession.utilReplaceInResponse("\n<li>allowdesigner\n<li>SW|0", "\n<li>allowdesigner\n<li>SW|1");
                 }
             }
@@ -97,7 +102,6 @@ namespace FiddlerSPDSettings
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
-                    oSession.utilDecodeResponse();
                     oSession.utilReplaceInResponse("\"AllowRevertFromTemplateForCurrentUser\":false", "\"AllowRevertFromTemplateForCurrentUser\":true");
                 }
             }
@@ -106,7 +110,6 @@ namespace FiddlerSPDSettings
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
-                    oSession.utilDecodeResponse();
                     oSession.utilReplaceInResponse("\"AllowMasterPageEditingForCurrentUser\":false", "\"AllowMasterPageEditingForCurrentUser\":true");
                 }
             }
@@ -115,8 +118,12 @@ namespace FiddlerSPDSettings
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
-                    oSession.utilDecodeResponse();
                     oSession.utilReplaceInResponse("\"ShowUrlStructureForCurrentUser\":false", "\"ShowUrlStructureForCurrentUser\":true");
+                }
+
+                if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
+                {
+                    oSession.utilReplaceInResponse("\n<li>showurlstructure\n<li>SW|0", "\n<li>showurlstructure\n<li>SW|1");
                 }
             }
         }
