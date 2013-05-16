@@ -16,7 +16,7 @@ namespace FiddlerSPDSettings
         public const string UrlStructureEnabled = "UrlStructureEnabled";
         #endregion
 
-        #region Literals
+        #region Menu Elements
         public const string MenuBarName = "SharePoint Designer";
         public const string MenuItemSPD = "&Enable SharePoint Designer";
         public const string MenuItemRevertFromTemplate = "Enable &Detaching Pages from the Site Definition";
