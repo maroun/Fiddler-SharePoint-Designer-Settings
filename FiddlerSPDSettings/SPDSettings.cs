@@ -3,10 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 namespace FiddlerSPDSettings
 {
     public class SPDSettings : IAutoTamper2
     {
+        private bool enableSpd = false;
+        private bool enableUrlStructure = false;
+        private bool enableRevertFromTemplate = false;
+        private bool enableMasterPageEditing = false;
+        private MenuItem miEnableSPD;
+        private MenuItem miEnableUrlStructure;
+        private MenuItem miEnableRevertFromTemplate;
+        private MenuItem miEnableMasterPageEditing;
+        private MenuItem mnuSPD;
+
         public void OnPeekAtResponseHeaders(Session oSession)
         {
             throw new NotImplementedException();
