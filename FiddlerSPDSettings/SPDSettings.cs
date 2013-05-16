@@ -43,64 +43,99 @@ namespace FiddlerSPDSettings
             this.miEnableMasterPageEditing.Click += new System.EventHandler(this.miEnableMasterPageEditing_Click);
             this.miEnableMasterPageEditing.Checked = enableMasterPageEditing;
 
-            this.miEnableUrlStructure.Click += new System.EventHandler(this.miEnableFileListing_Click);
+            this.miEnableUrlStructure.Click += new System.EventHandler(this.miEnableUrlStructure_Click);
             this.miEnableUrlStructure.Checked = enableUrlStructure;
         }
 
-        public void miEnableFileListing_Click(object sender, EventArgs e)
+        public SPDSettings()
         {
-            throw new NotImplementedException();
+            this.enableSpd = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableSpd", false);
+            this.enableRevertFromTemplate = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", false);
+            this.enableMasterPageEditing = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableMasterPageEditing", false);
+            this.enableUrlStructure = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableUrlStructure", false);
+            this.initializeMenu();
+        }
+
+        public void miEnableUrlStructure_Click(object sender, EventArgs e)
+        {
+            miEnableUrlStructure.Checked = !miEnableUrlStructure.Checked;
+            enableUrlStructure = miEnableUrlStructure.Checked;
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableFileListing", enableUrlStructure);
         }
 
         public void miEnableMasterPageEditing_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            miEnableMasterPageEditing.Checked = !miEnableMasterPageEditing.Checked;
+            enableMasterPageEditing = miEnableMasterPageEditing.Checked;
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableMasterPageEditing", enableMasterPageEditing);
         }
 
         public void miEnableRevertFromTemplate_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            miEnableRevertFromTemplate.Checked = !miEnableRevertFromTemplate.Checked;
+            enableRevertFromTemplate = miEnableRevertFromTemplate.Checked;
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", enableRevertFromTemplate);
         }
 
         public void miEnableSPD_Click(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            miEnableSPD.Checked = !miEnableSPD.Checked;
+            enableSpd = miEnableSPD.Checked;
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableSpd", enableSpd);
         }
 
-        public void OnPeekAtResponseHeaders(Session oSession)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnPeekAtResponseHeaders(Session oSession) { }
 
-        public void AutoTamperRequestAfter(Session oSession)
-        {
-            throw new NotImplementedException();
-        }
+        public void AutoTamperRequestAfter(Session oSession) { }
 
-        public void AutoTamperRequestBefore(Session oSession)
-        {
-            throw new NotImplementedException();
-        }
+        public void AutoTamperRequestBefore(Session oSession) { }
 
-        public void AutoTamperResponseAfter(Session oSession)
-        {
-            throw new NotImplementedException();
-        }
+        public void AutoTamperResponseAfter(Session oSession) { }
 
         public void AutoTamperResponseBefore(Session oSession)
         {
-            throw new NotImplementedException();
+            if (enableSpd)
+            {
+                if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
+                {
+                    oSession.utilDecodeResponse();
+                    oSession.utilReplaceInResponse("\n<li>vti_disablewebdesignfeatures2\n<li>SX|wdfopensite", "");
+                    oSession.utilReplaceInResponse("\n<li>showurlstructure\n<li>SW|0", "\n<li>showurlstructure\n<li>SW|1");
+                    oSession.utilReplaceInResponse("\n<li>allowdesigner\n<li>SW|0", "\n<li>allowdesigner\n<li>SW|1");
+                }
+            }
+
+            if (enableRevertFromTemplate)
+            {
+                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                {
+                    oSession.utilDecodeResponse();
+                    oSession.utilReplaceInResponse("\"AllowRevertFromTemplateForCurrentUser\":false", "\"AllowRevertFromTemplateForCurrentUser\":true");
+                }
+            }
+
+            if (enableMasterPageEditing)
+            {
+                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                {
+                    oSession.utilDecodeResponse();
+                    oSession.utilReplaceInResponse("\"AllowMasterPageEditingForCurrentUser\":false", "\"AllowMasterPageEditingForCurrentUser\":true");
+                }
+            }
+
+            if (enableUrlStructure)
+            {
+                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                {
+                    oSession.utilDecodeResponse();
+                    oSession.utilReplaceInResponse("\"ShowUrlStructureForCurrentUser\":false", "\"ShowUrlStructureForCurrentUser\":true");
+                }
+            }
         }
 
-        public void OnBeforeReturningError(Session oSession)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnBeforeReturningError(Session oSession) {}
 
-        public void OnBeforeUnload()
-        {
-            throw new NotImplementedException();
-        }
+        public void OnBeforeUnload() {}
 
         public void OnLoad()
         {
