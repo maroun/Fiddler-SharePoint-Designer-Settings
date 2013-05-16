@@ -16,10 +16,10 @@ namespace FiddlerSPDSettings
 
         private void initializeMenu()
         {
-            this.miEnableSPD = new System.Windows.Forms.MenuItem("&Enable SharePoint Designer");
-            this.miEnableRevertFromTemplate = new System.Windows.Forms.MenuItem("Enable &Detaching Pages from the Site Definition");
-            this.miEnableMasterPageEditing = new System.Windows.Forms.MenuItem("Enable Customizing &Master Pages and Page Layouts ");
-            this.miEnableUrlStructure = new System.Windows.Forms.MenuItem("Enable Managing of the Web Site URL &Structure ");
+            this.miEnableSPD = new System.Windows.Forms.MenuItem(Constants.MenuItemSPD);
+            this.miEnableRevertFromTemplate = new System.Windows.Forms.MenuItem(Constants.MenuItemRevertFromTemplate);
+            this.miEnableMasterPageEditing = new System.Windows.Forms.MenuItem(Constants.MenuItemMasterPageEditing);
+            this.miEnableUrlStructure = new System.Windows.Forms.MenuItem(Constants.MenuItemUrlStructure);
 
             this.miEnableSPD.Index = 0;
             this.miEnableRevertFromTemplate.Index = 1;
@@ -28,7 +28,7 @@ namespace FiddlerSPDSettings
 
             this.mnuSPD = new System.Windows.Forms.MenuItem();
             this.mnuSPD.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] { this.miEnableSPD, this.miEnableRevertFromTemplate, this.miEnableMasterPageEditing, this.miEnableUrlStructure });
-            this.mnuSPD.Text = "SharePoint Designer";
+            this.mnuSPD.Text = Constants.MenuBarName;
 
             this.miEnableSPD.Click += new System.EventHandler(this.miEnableSPD_Click);
             this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref(string.Format("{0}.{1}", Constants.Prefix, Constants.SPDEnabled), false);
@@ -91,39 +91,39 @@ namespace FiddlerSPDSettings
 
             if (this.miEnableSPD.Checked)
             {
-                if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
+                if (oSession.uriContains(Constants.AuthorDll) && oSession.oResponse.headers.ExistsAndContains(Constants.ContentType, Constants.ApplicationRpc))
                 {
-                    oSession.utilReplaceInResponse("\n<li>vti_disablewebdesignfeatures2\n<li>SX|wdfopensite", "");
-                    oSession.utilReplaceInResponse("\n<li>allowdesigner\n<li>SW|0", "\n<li>allowdesigner\n<li>SW|1");
+                    oSession.utilReplaceInResponse(Constants.DisableWebdesignFeatures, string.Empty);
+                    oSession.utilReplaceInResponse(string.Format(Constants.AllowDesigner, "0"), string.Format(Constants.AllowDesigner, "1"));
                 }
             }
 
             if (this.miEnableRevertFromTemplate.Checked)
             {
-                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                if (oSession.uriContains(Constants.ProcessQuery) && oSession.oResponse.headers.ExistsAndContains(Constants.ContentType, Constants.ApplicationJson))
                 {
-                    oSession.utilReplaceInResponse("\"AllowRevertFromTemplateForCurrentUser\":false", "\"AllowRevertFromTemplateForCurrentUser\":true");
+                    oSession.utilReplaceInResponse(string.Format(Constants.AllowRevertFromTemplate, "false"), string.Format(Constants.AllowRevertFromTemplate, "true"));
                 }
             }
 
             if (this.miEnableMasterPageEditing.Checked)
             {
-                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                if (oSession.uriContains(Constants.ProcessQuery) && oSession.oResponse.headers.ExistsAndContains(Constants.ContentType, Constants.ApplicationJson))
                 {
-                    oSession.utilReplaceInResponse("\"AllowMasterPageEditingForCurrentUser\":false", "\"AllowMasterPageEditingForCurrentUser\":true");
+                    oSession.utilReplaceInResponse(string.Format(Constants.AllowMasterPageEditing, "false"), string.Format(Constants.AllowMasterPageEditing, "true"));
                 }
             }
 
             if (this.miEnableUrlStructure.Checked)
             {
-                if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
+                if (oSession.uriContains(Constants.ProcessQuery) && oSession.oResponse.headers.ExistsAndContains(Constants.ContentType, Constants.ApplicationJson))
                 {
-                    oSession.utilReplaceInResponse("\"ShowUrlStructureForCurrentUser\":false", "\"ShowUrlStructureForCurrentUser\":true");
+                    oSession.utilReplaceInResponse(string.Format(Constants.ShowUrlStructure, "false"), string.Format(Constants.ShowUrlStructure, "true"));
                 }
 
-                if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
+                if (oSession.uriContains(Constants.AuthorDll) && oSession.oResponse.headers.ExistsAndContains(Constants.ContentType, Constants.ApplicationRpc))
                 {
-                    oSession.utilReplaceInResponse("\n<li>showurlstructure\n<li>SW|0", "\n<li>showurlstructure\n<li>SW|1");
+                    oSession.utilReplaceInResponse(string.Format(Constants.ShowUrlStructureRpc, "0"), string.Format(Constants.ShowUrlStructureRpc, "1"));
                 }
             }
         }
