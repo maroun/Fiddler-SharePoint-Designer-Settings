@@ -8,10 +8,6 @@ namespace FiddlerSPDSettings
 {
     public class SPDSettings : IAutoTamper2
     {
-        private bool enableSpd = false;
-        private bool enableUrlStructure = false;
-        private bool enableRevertFromTemplate = false;
-        private bool enableMasterPageEditing = false;
         private MenuItem miEnableSPD;
         private MenuItem miEnableUrlStructure;
         private MenuItem miEnableRevertFromTemplate;
@@ -35,53 +31,45 @@ namespace FiddlerSPDSettings
             this.mnuSPD.Text = "SharePoint Designer";
 
             this.miEnableSPD.Click += new System.EventHandler(this.miEnableSPD_Click);
-            this.miEnableSPD.Checked = enableSpd;
+            this.miEnableSPD.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableSpd", false);
 
             this.miEnableRevertFromTemplate.Click += new System.EventHandler(this.miEnableRevertFromTemplate_Click);
-            this.miEnableRevertFromTemplate.Checked = enableRevertFromTemplate;
+            this.miEnableRevertFromTemplate.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", false);
 
             this.miEnableMasterPageEditing.Click += new System.EventHandler(this.miEnableMasterPageEditing_Click);
-            this.miEnableMasterPageEditing.Checked = enableMasterPageEditing;
+            this.miEnableMasterPageEditing.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableMasterPageEditing", false);
 
             this.miEnableUrlStructure.Click += new System.EventHandler(this.miEnableUrlStructure_Click);
-            this.miEnableUrlStructure.Checked = enableUrlStructure;
+            this.miEnableUrlStructure.Checked = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableUrlStructure", false);
         }
 
         public SPDSettings()
         {
-            this.enableSpd = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableSpd", false);
-            this.enableRevertFromTemplate = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", false);
-            this.enableMasterPageEditing = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableMasterPageEditing", false);
-            this.enableUrlStructure = FiddlerApplication.Prefs.GetBoolPref("extensions.autoenablespd.enableUrlStructure", false);
             this.initializeMenu();
         }
 
         public void miEnableUrlStructure_Click(object sender, EventArgs e)
         {
             miEnableUrlStructure.Checked = !miEnableUrlStructure.Checked;
-            enableUrlStructure = miEnableUrlStructure.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableFileListing", enableUrlStructure);
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableFileListing", miEnableUrlStructure.Checked);
         }
 
         public void miEnableMasterPageEditing_Click(object sender, EventArgs e)
         {
             miEnableMasterPageEditing.Checked = !miEnableMasterPageEditing.Checked;
-            enableMasterPageEditing = miEnableMasterPageEditing.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableMasterPageEditing", enableMasterPageEditing);
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableMasterPageEditing", miEnableMasterPageEditing.Checked);
         }
 
         public void miEnableRevertFromTemplate_Click(object sender, EventArgs e)
         {
             miEnableRevertFromTemplate.Checked = !miEnableRevertFromTemplate.Checked;
-            enableRevertFromTemplate = miEnableRevertFromTemplate.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", enableRevertFromTemplate);
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableRevertFromTemplate", miEnableRevertFromTemplate.Checked);
         }
 
         public void miEnableSPD_Click(object sender, EventArgs e)
         {
             miEnableSPD.Checked = !miEnableSPD.Checked;
-            enableSpd = miEnableSPD.Checked;
-            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableSpd", enableSpd);
+            FiddlerApplication.Prefs.SetBoolPref("extensions.autoenablespd.enableSpd", miEnableSPD.Checked);
         }
 
         public void OnPeekAtResponseHeaders(Session oSession) { }
@@ -94,7 +82,7 @@ namespace FiddlerSPDSettings
 
         public void AutoTamperResponseBefore(Session oSession)
         {
-            if (enableSpd)
+            if (this.miEnableSPD.Checked)
             {
                 if (oSession.uriContains("_vti_bin/_vti_aut/author.dll") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/x-vermeer-rpc"))
                 {
@@ -105,7 +93,7 @@ namespace FiddlerSPDSettings
                 }
             }
 
-            if (enableRevertFromTemplate)
+            if (this.miEnableRevertFromTemplate.Checked)
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
@@ -114,7 +102,7 @@ namespace FiddlerSPDSettings
                 }
             }
 
-            if (enableMasterPageEditing)
+            if (this.miEnableMasterPageEditing.Checked)
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
@@ -123,7 +111,7 @@ namespace FiddlerSPDSettings
                 }
             }
 
-            if (enableUrlStructure)
+            if (this.miEnableUrlStructure.Checked)
             {
                 if (oSession.uriContains("_vti_bin/client.svc/ProcessQuery") && oSession.oResponse.headers.ExistsAndContains("Content-Type", "application/json"))
                 {
