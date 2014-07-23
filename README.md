@@ -9,6 +9,8 @@ I've tested the "hack" on SharePoint 2010 and 2013.
 
 
 To install the fiddler extension do the following:
+
 Copy `FiddlerSPDSettings.dll` to `\My Documents\Fiddler2\Scripts` to make the extension available to the current user, or
-copy `FiddlerSPDSettings.dll` to `\Program Files\Fiddler2\Scripts` to make the extension available to all users on the machine
+copy `FiddlerSPDSettings.dll` to `\Program Files\Fiddler2\Scripts` to make the extension available to all users on the machine.
+
 Restart fiddler after copying the file.
