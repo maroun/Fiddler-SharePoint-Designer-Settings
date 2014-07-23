@@ -6,3 +6,9 @@ If you start SharePoint Designer, the server send a flag wether SharePoint Desig
 Please keep in mind that you still need the necessary permissions to make any changes.
 
 I've tested the "hack" on SharePoint 2010 and 2013.
+
+
+To install the fiddler extension do the following:
+Copy `FiddlerSPDSettings.dll` to `\My Documents\Fiddler2\Scripts` to make the extension available to the current user, or
+copy `FiddlerSPDSettings.dll` to `\Program Files\Fiddler2\Scripts` to make the extension available to all users on the machine
+Restart fiddler after copying the file.
